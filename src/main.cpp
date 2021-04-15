@@ -4,7 +4,7 @@
 
 static const int CS   = 10;
 static const int DRDY = 5;
-static const int CLKSPEED = 14000000;   // 14 MHz 
+static const int CLKSPEED = 1000000;   // 1 MHz 
 
 void setup()
 {
@@ -16,8 +16,16 @@ void setup()
     pinMode(DRDY, INPUT);
     digitalWrite(CS, HIGH);     // De-assert CS line
 
+    // Initialize SPI
+    SPI.begin();
+}
+
+void loop()
+{
     // Read ADC ID
-    SPI.beginTransaction(SPISettings(CLKSPEED, MSBFIRST, SPI_MODE0));
+    // Serial.println("Transfer start");
+
+    SPI.beginTransaction(SPISettings(CLKSPEED, MSBFIRST, SPI_MODE1));
     digitalWrite(CS, LOW);
     
     SPI.transfer(RREG | STATUS);    // 1st command byte (register address)
@@ -29,13 +37,8 @@ void setup()
     digitalWrite(CS, HIGH);
     SPI.endTransaction();
 
-
-    // Parse ID
-    Serial.println("Transfer completed: ");
+    // Serial.println("Transfer completed: ");
     Serial.println(rx_data, BIN);
-}
 
-void loop()
-{
-
+    delay(1000);
 }
