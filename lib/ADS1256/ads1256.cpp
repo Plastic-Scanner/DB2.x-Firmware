@@ -21,7 +21,8 @@ static uint8_t read_register(uint8_t reg)
     return rx_data;
 }
 
-void ADS1256::init()
+
+ADS1256::ADS1256()
 {
     // Initialize pins
     pinMode(CS, OUTPUT);

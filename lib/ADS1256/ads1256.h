@@ -3,8 +3,7 @@
 
 class ADS1256 {
 public:
-    ADS1256() {}
-    void init();
+    ADS1256();
     int read_id();
 };
 
