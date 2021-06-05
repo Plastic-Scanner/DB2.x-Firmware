@@ -10,10 +10,10 @@
             "includePath": [
                 "/home/jure/Plastic_scanner/adc-arduino/include",
                 "/home/jure/Plastic_scanner/adc-arduino/src",
+                "/home/jure/Plastic_scanner/adc-arduino/lib/ADS1256",
                 "/home/jure/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                 "/home/jure/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "/home/jure/.platformio/packages/framework-arduino-avr/variants/standard",
-                "/home/jure/Plastic_scanner/adc-arduino/lib/ADS1256",
                 "/home/jure/Plastic_scanner/adc-arduino/.pio/libdeps/uno/ADS12-xx-Library",
                 "/home/jure/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
                 "/home/jure/.platformio/packages/framework-arduino-avr/libraries/HID/src",
@@ -27,10 +27,10 @@
                 "path": [
                     "/home/jure/Plastic_scanner/adc-arduino/include",
                     "/home/jure/Plastic_scanner/adc-arduino/src",
+                    "/home/jure/Plastic_scanner/adc-arduino/lib/ADS1256",
                     "/home/jure/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
                     "/home/jure/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "/home/jure/.platformio/packages/framework-arduino-avr/variants/standard",
-                    "/home/jure/Plastic_scanner/adc-arduino/lib/ADS1256",
                     "/home/jure/Plastic_scanner/adc-arduino/.pio/libdeps/uno/ADS12-xx-Library",
                     "/home/jure/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
                     "/home/jure/.platformio/packages/framework-arduino-avr/libraries/HID/src",

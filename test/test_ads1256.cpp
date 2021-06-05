@@ -1,7 +1,7 @@
-#include <Arduino.h>
-#include <unity.h>
 #include "ads1256.h"
+#include <unity.h>
 #include <SPI.h>
+#include <Arduino.h>
 
 void test_read_id()
 {

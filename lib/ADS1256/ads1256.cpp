@@ -42,7 +42,6 @@ ADS1256::ADS1256()
 int ADS1256::read_id()
 {
     uint8_t id = read_register(STATUS) >> 4;
-    // assert((r >> 4) == id);      // ID should be 15 (decimal)
     return id;
 }
 
@@ -50,11 +49,10 @@ long ADS1256::read_channel()
 {
     // Check DRDY pin
     send_command(RDATA);
-    uint8_t high, mid, low;
+    uint8_t high=0, mid=0, low=0;
     high = SPI.transfer(NOP);
     mid = SPI.transfer(NOP);
     low = SPI.transfer(NOP);
-    
-    uint32_t value = ((uint32_t)high << 16) + (long)(mid << 8) + (long)(low);
+    uint32_t value = ((uint32_t)high << 16) + ((uint32_t)mid << 8) + ((uint32_t)low);
     return value;
 }

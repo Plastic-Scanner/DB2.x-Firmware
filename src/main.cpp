@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <ads1256.h>        // Exact model defined inside here, stolen from the library
+#include "assert.h"
 
 void setup()
 {
@@ -14,6 +15,7 @@ void setup()
     // Read chip ID (should be 15 @decimal)
     Serial.println("Reading chip ID");
     int id = ads1256.read_id();
+    assert(id == 12);
     Serial.println(id);
 
     // Read single conversion (channel ??)
