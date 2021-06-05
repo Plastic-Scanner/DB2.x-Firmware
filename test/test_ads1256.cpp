@@ -7,16 +7,21 @@ void test_read_id()
 {
     SPI.begin();
     ADS1256 ads1256;
-    int id = ads1256.read_id();
-    TEST_ASSERT_EQUAL_INT(15, id);
+    for (int i=0; i<5; i++) {
+        TEST_ASSERT_EQUAL_INT(15, ads1256.read_id());
+    }
 }
 
+void test_assert()
+{
+    SPI.begin();
+    ADS1256 ads1256;
+}
 
-void setup()
+int main()
 {
     UNITY_BEGIN();
     RUN_TEST(test_read_id);
+    RUN_TEST(test_assert);
     UNITY_END();
 }
-
-void loop() {}

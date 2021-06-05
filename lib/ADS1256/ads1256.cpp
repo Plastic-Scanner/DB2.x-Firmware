@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+#include "assert.h"
+
 static const uint8_t CS   = 10;
 static const uint8_t DRDY = 5;
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
@@ -42,6 +44,7 @@ ADS1256::ADS1256()
 int ADS1256::read_id()
 {
     uint8_t id = read_register(STATUS) >> 4;
+    // assert(0);  // DEBUG
     return id;
 }
 
