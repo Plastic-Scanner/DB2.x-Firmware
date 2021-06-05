@@ -44,7 +44,6 @@ ADS1256::ADS1256()
 int ADS1256::read_id()
 {
     uint8_t id = read_register(STATUS) >> 4;
-    // assert(0);  // DEBUG
     return id;
 }
 
@@ -58,4 +57,13 @@ long ADS1256::read_channel()
     low = SPI.transfer(NOP);
     uint32_t value = ((uint32_t)high << 16) + ((uint32_t)mid << 8) + ((uint32_t)low);
     return value;
+}
+
+
+// DEBUG
+int ADS1256::assert_debug(bool b)
+{
+    uint8_t id = read_register(STATUS) >> 4;
+    assert(b);
+    return id;  
 }
