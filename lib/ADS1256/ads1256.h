@@ -6,7 +6,7 @@ public:
     ADS1256();
     int read_id();
     long read_channel();
-    int assert_debug(bool b);
+    int assert_debug(bool);
 };
 
 #endif // ADS1256_H

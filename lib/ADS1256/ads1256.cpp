@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#include "assert.h"
+#include "myassert.h"
 
 static const uint8_t CS   = 10;
 static const uint8_t DRDY = 5;
@@ -63,6 +63,6 @@ long ADS1256::read_channel()
 int ADS1256::assert_debug(bool b)
 {
     uint8_t id = read_register(STATUS) >> 4;
-    assert(b);
+    myassert(b);
     return id;
 }

@@ -1,9 +1,8 @@
-#include "assert.h" 
+#include "myassert.h" 
 #include "Arduino.h"
 
 void assertion_failure(const char* expr, const char* file, int linenum)
 {
-    Serial.flush();
     Serial.print("Assertion failed in '");
     Serial.print(file);
     Serial.print("' on line ");
