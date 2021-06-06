@@ -59,11 +59,10 @@ long ADS1256::read_channel()
     return value;
 }
 
-
 // DEBUG
 int ADS1256::assert_debug(bool b)
 {
     uint8_t id = read_register(STATUS) >> 4;
     assert(b);
-    return id;  
+    return id;
 }

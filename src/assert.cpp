@@ -1,14 +1,8 @@
 #include "assert.h" 
 #include "Arduino.h"
 
-void assertion_failure(char* expr, char* file, char* basefile, int linenum)
+void assertion_failure(const char* expr, const char* file, int linenum)
 {
-    // These can be seen with a debugger          
-    volatile const char* v_expr     = expr;
-    volatile const char* v_file     = file;
-    volatile int v_linenum          = linenum;
-    // volatile const char* v_basefile = basefile;
-
     Serial.flush();
     Serial.print("Assertion failed in '");
     Serial.print(file);
