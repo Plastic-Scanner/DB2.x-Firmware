@@ -33,7 +33,7 @@ static uint8_t read_register(uint8_t reg)
     return rx_data;
 }
 
-ADS1256::ADS1256()
+void ADS1256::begin()
 {
     // Initialize pins
     pinMode(CS, OUTPUT);
@@ -41,7 +41,7 @@ ADS1256::ADS1256()
     digitalWrite(CS, HIGH);     // De-assert CS line
     
     // assume that SPI.begin() has been called!!!!
-    // assert(read_id() == 15);
+    assert(read_id() == 15);
 }
 
 int ADS1256::read_id()

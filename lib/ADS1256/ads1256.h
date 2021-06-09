@@ -3,7 +3,7 @@
 
 class ADS1256 {
 public:
-    ADS1256();
+    void begin();
     int read_id();
     long read_channel();
 };
