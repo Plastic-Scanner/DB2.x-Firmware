@@ -5,6 +5,7 @@
 
 #include "assert.h"
 
+static const uint8_t CHIP_ID   = 15;
 static const uint8_t CS   = 10;
 static const uint8_t DRDY = 5;
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
@@ -38,7 +39,9 @@ ADS1256::ADS1256()
     pinMode(CS, OUTPUT);
     pinMode(DRDY, INPUT);
     digitalWrite(CS, HIGH);     // De-assert CS line
-    // assume that SPI.begin() has been called
+    
+    // assume that SPI.begin() has been called!!!!
+    assert(read_id() == CHIP_ID);
 }
 
 int ADS1256::read_id()
@@ -57,12 +60,4 @@ long ADS1256::read_channel()
     low = SPI.transfer(NOP);
     uint32_t value = ((uint32_t)high << 16) + ((uint32_t)mid << 8) + ((uint32_t)low);
     return value;
-}
-
-// DEBUG
-int ADS1256::assert_debug(bool b)
-{
-    uint8_t id = read_register(STATUS) >> 4;
-    assert(b);
-    return id;
 }
