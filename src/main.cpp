@@ -10,12 +10,11 @@ void setup()
     Serial.begin(9500);
     SPI.begin();
     adc.begin();
-    
     Serial.println("PlasticScanner is initialized!");
 }
 
 void loop()
 {
     Serial.println(adc.read_id());
-    delay(1000);
+    delay(500);
 }
