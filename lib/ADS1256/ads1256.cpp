@@ -5,7 +5,7 @@
 
 #include "assert.h"
 
-static const uint8_t CHIP_ID   = 15;
+static const uint8_t CHIP_ID = 15;
 static const uint8_t CS   = 10;
 static const uint8_t DRDY = 5;
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
@@ -41,7 +41,7 @@ ADS1256::ADS1256()
     digitalWrite(CS, HIGH);     // De-assert CS line
     
     // assume that SPI.begin() has been called!!!!
-    assert(read_id() == CHIP_ID);
+    // assert(read_id() == 15);
 }
 
 int ADS1256::read_id()
