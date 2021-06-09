@@ -39,9 +39,7 @@ void ADS1256::begin()
     pinMode(CS, OUTPUT);
     pinMode(DRDY, INPUT);
     digitalWrite(CS, HIGH);     // De-assert CS line
-    
-    // assume that SPI.begin() has been called!!!!
-    assert(read_id() == 15);
+    assert(read_id() == CHIP_ID);
 }
 
 int ADS1256::read_id()
