@@ -24,8 +24,9 @@ static void write_register(uint8_t reg, uint8_t data)
     SPI.beginTransaction(SPISettings(CLKSPEED, MSBFIRST, SPI_MODE1));
     digitalWrite(CS, LOW);
     SPI.transfer(WREG | reg);   // 1st command byte (register address)
+    delayMicroseconds(10);
     SPI.transfer(data);         // 2nd command byte (no.registers to read == 1)
-    delayMicroseconds(5);
+    delayMicroseconds(10);
     digitalWrite(CS, HIGH);
     SPI.endTransaction();
 }
@@ -36,9 +37,9 @@ static uint8_t read_register(uint8_t reg)
     digitalWrite(CS, LOW);
     SPI.transfer(RREG | reg);   // 1st command byte (register address)
     SPI.transfer(0x00);         // 2nd command byte (no.registers to read == 1)
-    delayMicroseconds(10);      // do I need this?
+    delayMicroseconds(10);      // t6 delay @datasheet Fig1. Serial Interface Timing
     uint8_t rx_data = SPI.transfer(NOP);
-    delayMicroseconds(10);      // do I need this?
+    delayMicroseconds(2);      // t11 delay
     digitalWrite(CS, HIGH);
     SPI.endTransaction();
     return rx_data;
@@ -58,13 +59,15 @@ void ADS1256::begin()
 
     Serial.print("Mux: ");
     Serial.println(read_register(MUX), HEX);
+    write_register(MUX, 0x01);
+    Serial.print("Mux after write: ");
+    Serial.println(read_register(MUX), HEX);
     
     Serial.print("Adcon: ");
     Serial.println(read_register(ADCON), HEX);
 
     Serial.print("Chip ID: ");
     Serial.println(read_id(), DEC);
-
 }
 
 int ADS1256::read_id()
@@ -75,8 +78,9 @@ int ADS1256::read_id()
 
 long ADS1256::read_channel()
 {
-    // Check DRDY pin
+    while(digitalRead(DRDY));       // Wait for nDRDY
     send_command(RDATA);
+    delayMicroseconds(10);          // t6 @datasheet RDATA command
     uint8_t high=0, mid=0, low=0;
     high = SPI.transfer(NOP);
     mid = SPI.transfer(NOP);
