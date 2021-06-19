@@ -4,17 +4,28 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-
 static const uint8_t CHIP_ID = 15;
 static const uint8_t CS   = 10;
 static const uint8_t DRDY = 5;
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
+
 
 static void send_command(uint8_t cmd)
 {
     SPI.beginTransaction(SPISettings(CLKSPEED, MSBFIRST, SPI_MODE1));
     digitalWrite(CS, LOW);
     SPI.transfer(cmd);
+    digitalWrite(CS, HIGH);
+    SPI.endTransaction();
+}
+
+static void write_register(uint8_t reg, uint8_t data)
+{
+    SPI.beginTransaction(SPISettings(CLKSPEED, MSBFIRST, SPI_MODE1));
+    digitalWrite(CS, LOW);
+    SPI.transfer(WREG | reg);   // 1st command byte (register address)
+    SPI.transfer(data);         // 2nd command byte (no.registers to read == 1)
+    delayMicroseconds(5);
     digitalWrite(CS, HIGH);
     SPI.endTransaction();
 }
@@ -40,6 +51,20 @@ void ADS1256::begin()
     pinMode(DRDY, INPUT);
     digitalWrite(CS, HIGH);     // De-assert CS line
     assert(read_id() == CHIP_ID);
+
+    // Configure input mux
+    Serial.print("Status: ");
+    Serial.println(read_register(STATUS), HEX);
+
+    Serial.print("Mux: ");
+    Serial.println(read_register(MUX), HEX);
+    
+    Serial.print("Adcon: ");
+    Serial.println(read_register(ADCON), HEX);
+
+    Serial.print("Chip ID: ");
+    Serial.println(read_id(), DEC);
+
 }
 
 int ADS1256::read_id()
