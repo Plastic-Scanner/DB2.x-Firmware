@@ -3,6 +3,7 @@
 #include "assert.h"
 #include <Arduino.h>
 #include <SPI.h>
+#include <stdint.h>
 
 static const uint8_t CHIP_ID = 15;
 static const uint8_t CS   = 10;
