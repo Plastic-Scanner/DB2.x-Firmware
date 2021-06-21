@@ -4,15 +4,29 @@
     Strobe pin is connected directly to the MCU
 */
 #include "led.h"
-#include "ads1256.h"
-#include "ads1256_regmap.h"
 #include "assert.h"
-
-#define STROBE      4   // D4 pin
+#include "Arduino.h"
 
 void Led::begin()
 {
-    // Initialize ADC's GPIOs as outputs
-    adc.write_register(IO, 0x00);
-    assert(adc.read_register(IO) == 0x00);
+    // Initialize LED
+    Serial.print("LED pin is: ");
+    Serial.println(_pin);
+    pinMode(_pin, OUTPUT);
+    digitalWrite(_pin, LOW);
+}
+
+void Led::on()
+{
+    digitalWrite(_pin, HIGH);
+}
+
+void Led::off ()
+{
+    digitalWrite(_pin, LOW);
+}
+
+void Led::toggle()
+{
+    digitalWrite(_pin, !digitalRead(_pin));
 }

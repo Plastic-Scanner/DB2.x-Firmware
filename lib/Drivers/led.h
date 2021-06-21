@@ -1,15 +1,16 @@
 #ifndef LED_H
 #define LED_H
 
-#include "ads1256.h"
-
 class Led {
 public:
-    Led(ADS1256 &adc) : adc(adc) {};
+    Led(int pin): _pin(pin) {};
     void begin();
+    void on();
+    void off();
+    void toggle();
 
 private:
-    ADS1256 &adc;
+    const int _pin; 
 };
 
 

@@ -53,22 +53,6 @@ void ADS1256::begin()
     pinMode(DRDY, INPUT);
     digitalWrite(CS, HIGH);     // De-assert CS line
     assert(read_id() == CHIP_ID);
-
-    // Configure input mux
-    Serial.print("Status: ");
-    Serial.println(read_register(STATUS), HEX);
-
-    Serial.print("Mux: ");
-    Serial.println(read_register(MUX), HEX);
-    write_register(MUX, 0x01);
-    Serial.print("Mux after write: ");
-    Serial.println(read_register(MUX), HEX);
-    
-    Serial.print("Adcon: ");
-    Serial.println(read_register(ADCON), HEX);
-
-    Serial.print("Chip ID: ");
-    Serial.println(read_id(), DEC);
 }
 
 int ADS1256::read_id()
