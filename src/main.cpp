@@ -14,7 +14,7 @@ ADS1256 adc;
 Led leds[] = {
     Led(2),
     Led(3),
-    Led(7)
+    Led(8)
 };
 
 void setup()
