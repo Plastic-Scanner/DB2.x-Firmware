@@ -1,8 +1,8 @@
+#include "assert.h"
+#include <Arduino.h>
 #include "ads1256.h"
 #include "ads1256_regmap.h"
-#include "assert.h"
 #include <SPI.h>
-#include <Arduino.h>
 #include <stdint.h>
 
 static const uint8_t CHIP_ID = 15;

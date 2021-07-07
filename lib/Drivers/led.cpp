@@ -10,8 +10,6 @@
 void Led::begin()
 {
     // Initialize LED
-    Serial.print("LED pin is: ");
-    Serial.println(_pin);
     pinMode(_pin, OUTPUT);
     digitalWrite(_pin, LOW);
 }
