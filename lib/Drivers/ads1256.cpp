@@ -5,7 +5,7 @@
 #include <SPI.h>
 #include <stdint.h>
 
-static const uint8_t CHIP_ID = 15;
+static const uint8_t CHIP_ID = 3;
 static const uint8_t CS   = 10;
 static const uint8_t DRDY = 5;
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
@@ -52,7 +52,7 @@ void ADS1256::begin()
     pinMode(CS, OUTPUT);
     pinMode(DRDY, INPUT);
     digitalWrite(CS, HIGH);     // De-assert CS line
-    assert(read_id() == CHIP_ID);
+    // assert(read_id() == CHIP_ID);
 }
 
 int ADS1256::read_id()
