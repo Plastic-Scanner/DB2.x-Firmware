@@ -19,19 +19,20 @@ void setup()
     SPI.begin();
     adc.begin();
     Serial.println("PlasticScanner is initialized!");
-}
 
-void loop()
-{
+
     int id = 0;
     id = adc.read_id();
     Serial.print("ID: ");
     Serial.println(id);
-    
-    // long val = 0;
-    // val = adc.read_channel();
-    // Serial.print("channel: ");
-    // Serial.println(val);
+}
 
-    delay(1000);
+void loop()
+{
+    long val = 0;
+    val = adc.read_channel();
+    Serial.print("channel: ");
+    Serial.println(val);
+
+    delay(100);
 }
