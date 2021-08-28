@@ -20,7 +20,6 @@ void setup()
     adc.begin();
     Serial.println("PlasticScanner is initialized!");
 
-
     int id = 0;
     id = adc.read_id();
     Serial.print("ID: ");
@@ -34,5 +33,5 @@ void loop()
     Serial.print("channel: ");
     Serial.println(val);
 
-    delay(100);
+    delay(500);
 }
