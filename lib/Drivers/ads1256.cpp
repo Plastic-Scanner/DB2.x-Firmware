@@ -12,6 +12,10 @@ static const uint8_t CS      = 10;
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
 static const uint8_t CHIP_ID = 3;
 
+static void wait_DRDY()
+{
+    while(digitalRead(DRDY));
+}
 
 static void send_command(uint8_t cmd)
 {
@@ -59,7 +63,8 @@ void ADS1256::begin()
     
     reset();
     assert(read_id() == CHIP_ID);
-    while(digitalRead(DRDY));
+
+    send_command(SDATAC);       // stop continuous reading mode
 }
 
 void ADS1256::reset()
