@@ -5,10 +5,12 @@
 #include <SPI.h>
 #include <stdint.h>
 
-static const uint8_t CHIP_ID = 3;
-static const uint8_t CS      = 10;
+static const uint8_t RESET   = 6;
 static const uint8_t DRDY    = 5;
+static const uint8_t CS      = 10;
+
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
+static const uint8_t CHIP_ID = 3;
 
 
 static void send_command(uint8_t cmd)
@@ -49,10 +51,23 @@ static uint8_t read_register(uint8_t reg)
 void ADS1256::begin()
 {
     // Initialize pins
-    pinMode(CS, OUTPUT);
+    pinMode(RESET, OUTPUT);
     pinMode(DRDY, INPUT);
+    pinMode(CS, OUTPUT);
     digitalWrite(CS, HIGH);     // De-assert CS line
+    digitalWrite(RESET, HIGH);  // De-assert RESET line
+    
+    reset();
     assert(read_id() == CHIP_ID);
+    while(digitalRead(DRDY));
+}
+
+void ADS1256::reset()
+{
+    digitalWrite(RESET, LOW);
+    delayMicroseconds(100);     // t16 @datasheet Fig3. RESET and SYNC/PDWN Timing     
+    digitalWrite(RESET, HIGH);
+    delay(30);                  // TODO - how to know exact timing?
 }
 
 int ADS1256::read_id()

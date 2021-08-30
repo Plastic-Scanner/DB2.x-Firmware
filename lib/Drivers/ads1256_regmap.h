@@ -132,7 +132,7 @@ ADS1255/6. A shorted sensor produces a very small signal while an open-circuit s
 #define		WAKEUP		0x00 	//Exit Sleep Mode
 #define 	STANDBY		0xFD	//Enter Sleep Mode
 #define 	SYNC 		0xFC    //Synchornize the A/D Conversion
-#define 	RESET		0xFE	//Reset To Power UP values
+// #define 	RESET		0xFE	//Reset To Power UP values  // JUR: macro clashing with user code
 #define		NOP			0xFF	//No operation
 /*DATA READ*/
 #define		RDATA		0x01	//Read data once

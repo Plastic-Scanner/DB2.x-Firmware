@@ -6,6 +6,7 @@
 class ADS1256 {
 public:
     void begin();
+    void reset();
     int read_id();
     long read_channel();
 };
