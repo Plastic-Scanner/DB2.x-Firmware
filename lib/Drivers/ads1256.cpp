@@ -1,7 +1,7 @@
 #include "assert.h"
-#include <Arduino.h>
 #include "ads1256.h"
 #include "ads1256_regmap.h"
+#include <Arduino.h>
 #include <SPI.h>
 #include <stdint.h>
 
@@ -12,7 +12,7 @@ static const uint8_t CS      = 10;
 static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
 static const uint8_t CHIP_ID = 3;
 
-static void wait_DRDY()
+static inline void wait_DRDY()
 {
     while(digitalRead(DRDY));
 }
@@ -72,7 +72,7 @@ void ADS1256::reset()
     digitalWrite(RESET, LOW);
     delayMicroseconds(100);     // t16 @datasheet Fig3. RESET and SYNC/PDWN Timing     
     digitalWrite(RESET, HIGH);
-    delay(30);                  // TODO - how to know exact timing?
+    delay(30);
 }
 
 int ADS1256::read_id()
@@ -83,7 +83,7 @@ int ADS1256::read_id()
 
 long ADS1256::read_channel()
 {
-    while(digitalRead(DRDY));       // Wait for nDRDY
+    wait_DRDY();
     send_command(RDATA);
     delayMicroseconds(10);          // t6 @datasheet RDATA command
     uint8_t high=0, mid=0, low=0;
