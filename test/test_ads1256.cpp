@@ -1,21 +1,32 @@
 #include "ads1256.h"
-#include <unity.h>
-#include <SPI.h>
 #include <Arduino.h>
+#include <SPI.h>
+#include <unity.h>
+
+ADS1256 adc;
 
 void test_read_id()
 {
-    SPI.begin();
-    ADS1256 adc;
-    adc.begin();
-    for (int i=0; i<5; i++) {
+    for (int i=0; i<10; i++) {
         TEST_ASSERT_EQUAL_INT(3, adc.read_id());
     }
 }
 
-int main()
+void setup()
 {
+    // delay(2000);        // Startup delay for devices w/o software reset
+    SPI.begin();
+    adc.begin();
+
     UNITY_BEGIN();
     RUN_TEST(test_read_id);
     UNITY_END();
+}
+
+void loop()
+{
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(500);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(500);
 }
