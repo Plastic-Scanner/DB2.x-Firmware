@@ -79,13 +79,13 @@ values.*/
 /*The Sensor Detect Current Sources can be activated to verify the integrity of an external sensor supplying a signal to the
 ADS1255/6. A shorted sensor produces a very small signal while an open-circuit sensor produces a very large signal.*/
 /*PGA3:0 Programmable Gain Amplifier Setting*/
-#define PGA_1 //(default)
-#define PGA_2
-#define PGA_4
-#define PGA_8
-#define PGA_16
-#define PGA_32
-#define PGA_64
+#define PGA_1   B00000000     //(default)
+#define PGA_2   B00000001
+#define PGA_4   B00000010
+#define PGA_8   B00000011
+#define PGA_16  B00000100
+#define PGA_32  B00000101
+#define PGA_64  B00000110
 
 /*DRATE - A/D Data Rate Register 0 ( see p32)*/
 /* BIT7 - BIT6   -  BIT5   -  BIT4   -  BIT3   -  BIT2   -  BIT1   -  BIT0 */
