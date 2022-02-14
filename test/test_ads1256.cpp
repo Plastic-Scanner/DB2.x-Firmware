@@ -14,7 +14,7 @@ void test_read_id()
 
 void setup()
 {
-    // delay(2000);        // Startup delay for devices w/o software reset
+    delay(2000);        // Startup delay for devices w/o software reset
     SPI.begin();
     adc.begin();
 

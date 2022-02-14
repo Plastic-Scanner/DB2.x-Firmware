@@ -5,12 +5,15 @@
 */
 
 #include "assert.h"
-#include "ads1256.h"
+#include <ADS1256.h>
 #include "led.h"
 #include <Arduino.h>
 #include <SPI.h>
 
-ADS1256 adc;
+static const int CLKSPEED_MHZ = 8;
+static const int VREF = 2.5;
+
+ADS1256 adc(CLKSPEED_MHZ, VREF, false);
 
 void setup()
 {
@@ -18,18 +21,22 @@ void setup()
     Serial.println("Initializing...");
     SPI.begin();
     adc.begin();
+    adc.setChannel(0);
     Serial.println("PlasticScanner is initialized!");
 
-    int id = 0;
-    id = adc.read_id();
-    Serial.print("ID: ");
-    Serial.println(id);
+    // int id = 0;
+    // id = adc.read_id();
+    // Serial.print("ID: ");
+    // Serial.println(id);
 }
 
 void loop()
 {
-    long val = 0;
-    val = adc.read_channel();
+    float val = 0;
+
+    adc.waitDRDY();
+    val = adc.readCurrentChannel();
+  
     Serial.print("channel: ");
     Serial.println(val);
 

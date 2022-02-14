@@ -9,7 +9,7 @@ static const uint8_t RESET   = 6;
 static const uint8_t DRDY    = 5;
 static const uint8_t CS      = 10;
 
-static const uint32_t CLKSPEED = 1000000;   // 1 MHz 
+static const uint32_t CLKSPEED = 1000000; 
 static const uint8_t CHIP_ID = 3;
 
 static inline void wait_DRDY()
@@ -64,7 +64,23 @@ void ADS1256::begin()
     reset();
     assert(read_id() == CHIP_ID);
 
-    send_command(SDATAC);       // stop continuous reading mode
+    send_command(SDATAC);           // stop continuous reading mode
+    write_register(DRATE, DR_10);   // set datarate (~10 SPS)
+    
+    // Set gain
+    uint8_t adcon_reg = read_register(ADCON);
+    uint8_t val2write = (adcon_reg & ~B00000111) | PGA_1;   // TODO understand how this works
+    write_register(ADCON, val2write);
+
+    // Perform self calibration
+    send_command(SELFCAL);
+    wait_DRDY();
+
+    // Select input channels
+    write_register(MUX, P_AIN0 | N_AIN1);
+
+    send_command(SYNC);
+    send_command(WAKEUP);
 }
 
 void ADS1256::reset()
