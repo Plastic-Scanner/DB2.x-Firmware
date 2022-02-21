@@ -4,8 +4,8 @@
 class TLC59208 {
 public:
     void begin();
-    void ledOn(int output);
-    void ledOff(int output);
+    void on(int output);
+    void off(int output);
 };
 
 
