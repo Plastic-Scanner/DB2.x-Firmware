@@ -30,7 +30,7 @@ void setup()
     ledctrl.begin();
     Serial.println("PlasticScanner is initialized!");
 
-    ledctrl.ledOn(2);
+    // ledctrl.ledOn(2);
 }
 
 void loop()
