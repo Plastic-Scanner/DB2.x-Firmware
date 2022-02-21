@@ -15,7 +15,7 @@ static const int CLKSPEED_MHZ = 8;
 static const float VREF = 2.5;
 
 ADS1256 adc(CLKSPEED_MHZ, VREF, false);
-TLC59208 ledctrl;
+TLC59208 leds;
 
 void setup()
 {
@@ -27,13 +27,13 @@ void setup()
     // adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
     // adc.setChannel(0,1);
     
-    ledctrl.begin();
+    leds.begin();
     Serial.println("PlasticScanner is initialized!");
 
     for (int i=0; i<8; i++) {
-        ledctrl.on(i);
+        leds.on(i);
         delay(500);
-        ledctrl.off(i);
+        leds.off(i);
     }
 }
 
