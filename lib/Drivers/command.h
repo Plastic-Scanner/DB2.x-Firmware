@@ -5,7 +5,9 @@ class Command {
 public:
     void begin(
         void (*scan)(), 
-        void (*adc)(), 
+        void (*adc)(),
+        void (*ledon_fptr)(int), 
+        void (*ledoff_fptr)(int),
         void (*unknown)()
         ); 
     void handle();
@@ -15,6 +17,8 @@ private:
 
     void (*scan_fptr)();
     void (*adc_fptr)();
+    void (*ledon_fptr)(int);
+    void (*ledoff_fptr)(int);
     void (*unknown_fptr)();
 };
 

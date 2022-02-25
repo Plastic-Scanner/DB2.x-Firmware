@@ -39,11 +39,15 @@ static void reset()
 
 void Command::begin(
     void (*scan)(), 
-    void (*adc)(), 
+    void (*adc)(),
+    void (*ledon)(int),
+    void (*ledoff)(int), 
     void (*unknown)() ) {
     
     this->scan_fptr = scan;
     this->adc_fptr = adc;
+    this->ledon_fptr = ledon;
+    this->ledoff_fptr = ledoff;
     this->unknown_fptr = unknown;
     
     state = State::IDLE;
@@ -92,5 +96,15 @@ void Command::parse_command(char *ptr)
 
     if      (strcmp(token, "SCAN") == 0) scan_fptr();
     else if (strcmp(token, "ADC") == 0)  adc_fptr();
-    else unknown_fptr();
+    else if (strcmp(token, "LEDON") == 0) {
+        token = strtok(NULL, DELIMITERS);               // Read parameter #1
+        if (token != NULL) ledon_fptr(strtol(token, NULL, 10));
+        else Serial.println("BAD ARGUMENTS");
+    
+    } else if (strcmp(token, "LEDOFF") == 0) {
+        token = strtok(NULL, DELIMITERS);               // Read parameter #1
+        if (token != NULL) ledoff_fptr(strtol(token, NULL, 10));
+        else Serial.println("BAD ARGUMENTS");
+
+    } else unknown_fptr();
 }

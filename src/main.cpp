@@ -13,8 +13,8 @@
 
 static const int CLKSPEED_MHZ = 8;
 static const float VREF = 2.5;
-
 ADS1256 adc(CLKSPEED_MHZ, VREF, false);
+static const int N_LEDS = 8;        // TODO: reorganize this duplicated constant @tlc
 TLC59208 ledctrl;
 Command commands;
 
@@ -29,6 +29,18 @@ void read_adc()
     adc.waitDRDY(); 
     float val = adc.readCurrentChannel();
     Serial.println(val , 10);
+}
+
+void ledon(int channel)
+{
+    if (channel >= 0 && channel < N_LEDS) ledctrl.on(channel);
+    else Serial.println("LEDON channel out of range");
+}
+
+void ledoff(int channel)
+{
+    if (channel >= 0 && channel <= N_LEDS-1) ledctrl.off(channel);
+    else Serial.println("LEDOFF channel out of range");
 }
 
 void unknown_command()
@@ -47,6 +59,8 @@ void setup()
     commands.begin(     // set callback functions for each command
         &scan,
         &read_adc,
+        &ledon,
+        &ledoff,
         &unknown_command
     );
 
