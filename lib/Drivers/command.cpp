@@ -37,7 +37,15 @@ static void reset()
     cmd_cnt = 0;
 }
 
-void Command::begin() {
+void Command::begin(
+    void (*scan)(), 
+    void (*adc)(), 
+    void (*unknown)() ) {
+    
+    this->scan_fptr = scan;
+    this->adc_fptr = adc;
+    this->unknown_fptr = unknown;
+    
     state = State::IDLE;
     reset();
 }
@@ -65,7 +73,7 @@ void Command::handle()
             n--;
             if (c == '\n' || c == '\r') {
                 cmd_buff[cmd_cnt] = 0;          // Replace end of command delimiter w/ null-terminator
-                parse_command(cmd_buff, cmd_cnt);
+                parse_command(cmd_buff);
                 reset();
                 state = State::IDLE;
             } else if (cmd_cnt == CMD_MAXCHARS) {
@@ -77,12 +85,12 @@ void Command::handle()
     }
 }
 
-void Command::parse_command(char *ptr, int nchars)
+void Command::parse_command(char *ptr)
 {
     const char *DELIMITERS = " \n\r";
     char *token = strtok(ptr, DELIMITERS);
 
-    if      (strncmp(token, "SCAN", nchars) == 0) Serial.println("SCANNING!");
-    else if (strncmp(token, "ADC", nchars) == 0)  Serial.println("ADC MEASUREMENT");
-    else Serial.println("UNKNOWN COMMAND");
+    if      (strcmp(token, "SCAN") == 0) scan_fptr();
+    else if (strcmp(token, "ADC") == 0)  adc_fptr();
+    else unknown_fptr();
 }

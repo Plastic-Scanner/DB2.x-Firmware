@@ -3,11 +3,19 @@
 
 class Command {
 public:
-    void begin();
+    void begin(
+        void (*scan)(), 
+        void (*adc)(), 
+        void (*unknown)()
+        ); 
     void handle();
 
 private:
-    void parse_command(char *ptr, int nchars);
+    void parse_command(char *ptr);
+
+    void (*scan_fptr)();
+    void (*adc_fptr)();
+    void (*unknown_fptr)();
 };
 
 

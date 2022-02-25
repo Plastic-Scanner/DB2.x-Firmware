@@ -18,6 +18,23 @@ ADS1256 adc(CLKSPEED_MHZ, VREF, false);
 TLC59208 ledctrl;
 Command commands;
 
+
+void scan()
+{
+    Serial.println("SCANNING!");
+}
+
+void read_adc()
+{
+    Serial.println("READING ADC");
+}
+
+void unknown_command()
+{
+    Serial.println("Unknown command");
+}
+
+
 void setup()
 {
     Serial.begin(9600);
@@ -25,7 +42,11 @@ void setup()
     Wire.begin();
     ledctrl.begin();
     adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
-    commands.begin();
+    commands.begin(
+        &scan,
+        &read_adc,
+        &unknown_command
+    );
 
     adc.setChannel(0,1);
     Serial.println("PlasticScanner is initialized!");
