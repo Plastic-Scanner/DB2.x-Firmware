@@ -25,8 +25,41 @@ enum State {IDLE, COLLECT, PARSE};
 State state = IDLE;
 
 const int PKT_MAX_SIZE = 12;
-char pkt_buff[PKT_MAX_SIZE];
+char pkt_buff[PKT_MAX_SIZE] = {0};
 int pkt_cnt = 0;
+
+
+static void printbuf(char *ptr, int n) 
+{
+    Serial.print("NCHARS = ");
+    Serial.print(n);
+    Serial.println();
+    Serial.print("ASCII: ");
+    for (int i=0; i<n; i++) {
+        Serial.print(ptr[i]);
+    }
+    Serial.println();
+    Serial.print("DEC: ");
+    for (int i=0; i<n; i++) {
+        Serial.print(ptr[i], DEC);
+        Serial.print(" ");
+    }
+}
+
+void parse_command(char *ptr, int nchars)
+{
+    const char *DELIMITER = " ";
+    char *token = strtok(ptr, DELIMITER);
+    if (token == NULL) {
+        Serial.println("BAD COMMAND!");
+        return;
+    }
+
+
+    if      (strncmp(token, "SCAN", nchars) == 0) Serial.println("SCANNING!");
+    else if (strncmp(token, "ADC", nchars) == 0)  Serial.println("ADC MEASUREMENT");
+    else Serial.println("UNKNOWN COMMAND");
+}
 
 void loop()
 {
@@ -48,7 +81,6 @@ void loop()
         if ((buff.first() == 'D') && 
              (buff.last() == 'B')) {
             buff.clear();
-            Serial.println("HEADER DETECTED!");
             state = State::COLLECT;
         }
     
@@ -60,11 +92,12 @@ void loop()
             n--;
             
             if (c == '\n' || c == '\r') {
-                Serial.println("GOT PACKET!");
                 state = State::PARSE;
-                // parse and execute commands?
-                
-                // Reset stuff
+                // Add a null-terminator at the end
+                pkt_cnt++;
+                pkt_buff[pkt_cnt] = 0;
+                parse_command(pkt_buff, pkt_cnt);
+                memset(pkt_buff, 0, sizeof(pkt_buff));
                 pkt_cnt = 0;
                 state = State::IDLE;
             } else if (pkt_cnt == PKT_MAX_SIZE) {
