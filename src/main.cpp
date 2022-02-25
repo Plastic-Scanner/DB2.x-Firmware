@@ -26,7 +26,9 @@ void scan()
 
 void read_adc()
 {
-    Serial.println("READING ADC");
+    adc.waitDRDY(); 
+    float val = adc.readCurrentChannel();
+    Serial.println(val , 10);
 }
 
 void unknown_command()
@@ -42,7 +44,7 @@ void setup()
     Wire.begin();
     ledctrl.begin();
     adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
-    commands.begin(
+    commands.begin(     // set callback functions for each command
         &scan,
         &read_adc,
         &unknown_command
