@@ -14,6 +14,9 @@ int cmd_cnt;
 CircularBuffer<char, 2> hdr_buff;   // HEADER buffer/sliding-window
 
 // Helper debugging function
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+
 static void printbuf(char *ptr, int n) 
 {
     Serial.print("NCHARS = ");
@@ -30,6 +33,9 @@ static void printbuf(char *ptr, int n)
         Serial.print(" ");
     }
 }
+
+#pragma GCC diagnostic pop
+
 
 static void reset()
 {
@@ -72,8 +78,7 @@ void Command::handle()
         int n = Serial.available();
         while (n > 0) {
             char c = Serial.read();
-            cmd_buff[cmd_cnt] = c;              // Read char into command buffer
-            cmd_cnt++;
+            cmd_buff[cmd_cnt++] = c;              // Read char into command buffer
             n--;
             if (c == '\n' || c == '\r') {
                 cmd_buff[cmd_cnt] = 0;          // Replace end of command delimiter w/ null-terminator

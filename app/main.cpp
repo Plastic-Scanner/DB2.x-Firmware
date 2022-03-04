@@ -17,7 +17,7 @@ static const int N_LEDS = 8;        // TODO: reorganize this duplicated constant
 
 ADS1256 adc(CLKSPEED_MHZ, VREF, false);
 TLC59208 ledctrl;
-Command commands;
+Command cmd;
 
 
 void scan()
@@ -69,7 +69,7 @@ void setup()
     Wire.begin();
     ledctrl.begin();
     adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
-    commands.begin(     // set callback functions for each command
+    cmd.begin(     // set callback functions for each command
         &scan,
         &read_adc,
         &ledon,
@@ -83,6 +83,6 @@ void setup()
 
 void loop()
 {
-    commands.handle();
+    cmd.handle();
 }
 
