@@ -1,115 +1,80 @@
 #include "command.h"
-#include <CircularBuffer.h>
+#include <errno.h>
 #include <Arduino.h>
 
-enum State {
-    IDLE,           // Wait for HEADER ("DB")
-    COLLECT         // Collect all chars until ENDCHAR (\n or \r) or MAX_NUMCHARS
-};
-State state;
+static const int RX_BUF_SIZE = 20;
+static const int MAX_ARGS = 3;
 
-const int CMD_MAXCHARS = 12;        // COMMAND size limit (excl. header)
-char cmd_buff[CMD_MAXCHARS];        // COMMAND buffer
-int cmd_cnt;
-CircularBuffer<char, 2> hdr_buff;   // HEADER buffer/sliding-window
-
-// Helper debugging function
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
-
-static void printbuf(char *ptr, int n) 
-{
-    Serial.print("NCHARS = ");
-    Serial.print(n);
-    Serial.println();
-    Serial.print("ASCII: ");
-    for (int i=0; i<n; i++) {
-        Serial.print(ptr[i]);
-    }
-    Serial.println();
-    Serial.print("DEC: ");
-    for (int i=0; i<n; i++) {
-        Serial.print(ptr[i], DEC);
-        Serial.print(" ");
-    }
-}
-
-#pragma GCC diagnostic pop
+static char rx_buf[RX_BUF_SIZE];
+static int rx_cnt;
 
 
 static void reset()
 {
-    memset(cmd_buff, 0, sizeof(cmd_buff));
-    cmd_cnt = 0;
+    rx_cnt = 0;
+    memset(rx_buf, 0, RX_BUF_SIZE);
 }
 
-void Command::begin(
-    void (*scan)(), 
-    void (*adc)(),
-    void (*ledon)(int),
-    void (*ledoff)(int), 
-    void (*unknown)() ) {
+void Command::parse_command()
+{
+    int argc = 0;
+    char *argv[MAX_ARGS] = {0};
+
+    const char* delimiters = " ";
+    char *token = strtok(rx_buf, delimiters);
+    while (token != NULL) {
+        argv[argc++] = token;
+        token = strtok(NULL, delimiters);
+    }
+
+    if (argc < 1) return;
+    if      (strcmp(argv[0], "SCAN") == 0) Serial.println("SCANNING");
+    else if (strcmp(argv[0], "ADC") == 0) Serial.println("READING ADC");
+    else if (strcmp(argv[0], "LED") == 0) {
+        if (argc == 3) {
+            int num;
+            bool state;
+
+            num = (int)strtol(argv[1], NULL, 10);
+            // if (errno > 0) fail();
+            if      (strcmp(argv[2], "ON") == 0) state = true;
+            else if (strcmp(argv[2], "OFF") == 0) state = false;
+            // else fail(BAD_ARGS);
+
+            // Dummy function call
+            Serial.println("LED ");
+            Serial.println(num);
+            Serial.println("ON") ? state == true : Serial.println("OFF");
+        }
+
+
+    }
     
-    this->scan_fptr = scan;
-    this->adc_fptr = adc;
-    this->ledon_fptr = ledon;
-    this->ledoff_fptr = ledoff;
-    this->unknown_fptr = unknown;
-    
-    state = State::IDLE;
-    reset();
 }
 
 void Command::handle()
 {
-    if (state == State::IDLE) {
-        int n = Serial.available();
-        while (n > 0) {
-            hdr_buff.push(Serial.read());                   // Shift sliding window one char left
-            n--;
-            if ((hdr_buff.first() == 'D') && 
-                (hdr_buff.last() == 'B')) {                 // Change state if header detected
-                hdr_buff.clear();
-                state = State::COLLECT;
-            }
-        }
+    int n = Serial.available();
+    while (n > 0) {
+        char c = Serial.read();
+        if (c == '\b') {                    // backspace
+            rx_buf[--rx_cnt] = '\0';
+     
+        } else if (rx_cnt == RX_BUF_SIZE) { // buffer overflow
+            reset();
+     
+        } else if (c == '\n' || c == '\r') {
+            parse_command();
+            reset();
 
-    } else if (state == State::COLLECT) {
-        int n = Serial.available();
-        while (n > 0) {
-            char c = Serial.read();
-            cmd_buff[cmd_cnt++] = c;              // Read char into command buffer
-            n--;
-            if (c == '\n' || c == '\r') {
-                cmd_buff[cmd_cnt] = 0;          // Replace end of command delimiter w/ null-terminator
-                parse_command(cmd_buff);
-                reset();
-                state = State::IDLE;
-            } else if (cmd_cnt == CMD_MAXCHARS) {
-                Serial.println("ERROR: COMMAND TOO LONG");
-                reset();
-                state = State::IDLE;
-            }
+        } else {
+            rx_buf[rx_cnt++] = c;           // add to buffer
         }
+        n--;
     }
 }
 
-void Command::parse_command(char *ptr)
+void Command::begin()
 {
-    const char *DELIMITERS = " \n\r";
-    char *token = strtok(ptr, DELIMITERS);
-
-    if      (strcmp(token, "SCAN") == 0) scan_fptr();
-    else if (strcmp(token, "ADC") == 0)  adc_fptr();
-    else if (strcmp(token, "LEDON") == 0) {
-        token = strtok(NULL, DELIMITERS);               // Read parameter #1
-        if (token != NULL) ledon_fptr(strtol(token, NULL, 10));
-        else Serial.println("BAD ARGUMENTS");
-    
-    } else if (strcmp(token, "LEDOFF") == 0) {
-        token = strtok(NULL, DELIMITERS);               // Read parameter #1
-        if (token != NULL) ledoff_fptr(strtol(token, NULL, 10));
-        else Serial.println("BAD ARGUMENTS");
-
-    } else unknown_fptr();
+    reset();
 }
