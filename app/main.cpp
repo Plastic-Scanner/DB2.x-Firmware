@@ -14,7 +14,7 @@ Command cmd;
 void setup()
 {
     Serial.begin(9600);
-    cmd.begin();
+    cmd.begin(nullptr, nullptr,  nullptr, nullptr);
     Serial.println("PlasticScanner is initialized!");
 }
 

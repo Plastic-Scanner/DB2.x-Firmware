@@ -1,5 +1,6 @@
 #include "command.h"
-#include <errno.h>
+#include "assert.h"
+#include "errno.h"
 #include <Arduino.h>
 
 static const int RX_BUF_SIZE = 20;
@@ -7,7 +8,6 @@ static const int MAX_ARGS = 3;
 
 static char rx_buf[RX_BUF_SIZE];
 static int rx_cnt;
-
 
 static void reset()
 {
@@ -19,6 +19,7 @@ void Command::parse_command()
 {
     int argc = 0;
     char *argv[MAX_ARGS] = {0};
+    bool args_ok = true;
 
     const char* delimiters = " ";
     char *token = strtok(rx_buf, delimiters);
@@ -27,29 +28,30 @@ void Command::parse_command()
         token = strtok(NULL, delimiters);
     }
 
-    if (argc < 1) return;
-    if      (strcmp(argv[0], "SCAN") == 0) Serial.println("SCANNING");
-    else if (strcmp(argv[0], "ADC") == 0) Serial.println("READING ADC");
-    else if (strcmp(argv[0], "LED") == 0) {
+    if      (0 == strcmp(argv[0], "SCAN")) { scan(); } 
+    else if (0 == strcmp(argv[0], "ADC")) { adc(); } 
+    else if (0 == strcmp(argv[0], "LED")) {
+        int num;
+        bool state;
+        
         if (argc == 3) {
-            int num;
-            bool state;
-
+            errno = 0;
             num = (int)strtol(argv[1], NULL, 10);
-            // if (errno > 0) fail();
-            if      (strcmp(argv[2], "ON") == 0) state = true;
-            else if (strcmp(argv[2], "OFF") == 0) state = false;
-            // else fail(BAD_ARGS);
+            if (errno != 0) args_ok = false;            // TODO: this doesn't really work atm
 
-            // Dummy function call
-            Serial.println("LED ");
-            Serial.println(num);
-            Serial.println("ON") ? state == true : Serial.println("OFF");
+            if      (strcmp(argv[2], "ON") == 0) state = 1;
+            else if (strcmp(argv[2], "OFF") == 0) state = 1;
+            else args_ok = false;
+        } else {
+            args_ok = false;
         }
-
-
-    }
     
+        if (args_ok) {
+            led(num, state);
+        } else {
+            Serial.println("Bad arguments");
+        }
+    }
 }
 
 void Command::handle()
@@ -59,14 +61,14 @@ void Command::handle()
         char c = Serial.read();
         if (c == '\b') {                    // backspace
             rx_buf[--rx_cnt] = '\0';
-     
+
         } else if (rx_cnt == RX_BUF_SIZE) { // buffer overflow
             reset();
-     
+        
         } else if (c == '\n' || c == '\r') {
             parse_command();
             reset();
-
+        
         } else {
             rx_buf[rx_cnt++] = c;           // add to buffer
         }
@@ -74,7 +76,15 @@ void Command::handle()
     }
 }
 
-void Command::begin()
+void Command::begin(
+    void (*scan)(), 
+    void (*adc)(),
+    void (*led)(int, bool),
+    void (*unknown)())
 {
+    this->scan = scan;
+    this->adc = adc;
+    this->led = led;
+    this->unknown = unknown;
     reset();
 }
