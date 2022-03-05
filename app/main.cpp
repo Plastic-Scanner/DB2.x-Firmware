@@ -11,10 +11,15 @@
 
 Command cmd;
 
+void test()
+{
+    Serial.println("Testing");
+}
+
 void setup()
 {
     Serial.begin(9600);
-    cmd.begin(nullptr, nullptr,  nullptr, nullptr);
+    cmd.begin(nullptr, test,  nullptr, nullptr);
     Serial.println("PlasticScanner is initialized!");
 }
 

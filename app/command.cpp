@@ -28,9 +28,13 @@ void Command::parse_command()
         token = strtok(NULL, delimiters);
     }
 
-    if      (0 == strcmp(argv[0], "SCAN")) { scan(); } 
-    else if (0 == strcmp(argv[0], "ADC")) { adc(); } 
-    else if (0 == strcmp(argv[0], "LED")) {
+    if      (0 == strcmp(argv[0], "SCAN")) { 
+        if (scan != nullptr) scan();
+
+    } else if (0 == strcmp(argv[0], "ADC")) {
+        if (adc != nullptr) adc();
+
+    } else if (0 == strcmp(argv[0], "LED")) {
         int num;
         bool state;
         
@@ -47,7 +51,7 @@ void Command::parse_command()
         }
     
         if (args_ok) {
-            led(num, state);
+            if (led != nullptr) led(num, state);
         } else {
             Serial.println("Bad arguments");
         }
