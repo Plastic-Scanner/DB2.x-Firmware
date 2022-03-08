@@ -50,7 +50,7 @@ void led(int channel, bool status)
 
 void unknown()
 {
-    Serial.println("you are stupid");
+    Serial.println("I didn't understand your command, did you mean SCAN, ADC, or LED ON/OFF?");
 }
 
 void setup()
@@ -68,7 +68,8 @@ void setup()
     );
 
     adc.setChannel(0,1);    // differential ADC reading 
-    Serial.println("PlasticScanner is initialized!");
+    Serial.print("PlasticScanner is initialized!");
+    Serial.println(" | Build date 08 march 2022");
 }
 
 void loop()
