@@ -48,6 +48,11 @@ void led(int channel, bool status)
     else ledctrl.off(channel);
 }
 
+void unknown()
+{
+    Serial.println("you are stupid");
+}
+
 void setup()
 {
     Serial.begin(9600);
@@ -56,10 +61,10 @@ void setup()
     ledctrl.begin();
     adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
     cmd.begin(     // set callback functions for each command
-        nullptr,
+        scan,
         read_adc,
         led,
-        nullptr
+        unknown
     );
 
     adc.setChannel(0,1);    // differential ADC reading 
