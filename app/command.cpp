@@ -51,7 +51,7 @@ void Command::parse_command()
             if (errno != 0) args_ok = false;            // TODO: this doesn't really work atm
 
             if      (strcmp(argv[2], "ON") == 0) state = 1;
-            else if (strcmp(argv[2], "OFF") == 0) state = 1;
+            else if (strcmp(argv[2], "OFF") == 0) state = 0;
             else args_ok = false;
         } else {
             args_ok = false;
@@ -62,8 +62,13 @@ void Command::parse_command()
         } else {
             Serial.println("Bad arguments");
         }
+    } else {
+        if (unknown != nullptr){
+            unknown();
+        }
     }
 }
+
 
 void Command::handle()
 {
