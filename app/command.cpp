@@ -3,6 +3,13 @@
 #include "errno.h"
 #include <Arduino.h>
 
+/*
+    Exapmple of commands (ignore the $ sign):
+    $ SCAN
+    $ ADC
+    $ LED 1 ON
+*/
+
 static const int RX_BUF_SIZE = 20;
 static const int MAX_ARGS = 3;
 
