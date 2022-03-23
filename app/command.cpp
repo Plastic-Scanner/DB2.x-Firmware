@@ -80,11 +80,12 @@ void Command::handle()
 
         } else if (rx_cnt == RX_BUF_SIZE) { // buffer overflow
             reset();
-        
-        } else if (c == '\n' || c == '\r') {
+
+        } else if (c == '\n' || c == '\r') { // line ending (LF or CR)
             parse_command();
             reset();
-        
+            if (Serial.peek() == '\n') Serial.read();  // handle CRLF line ending
+
         } else {
             rx_buf[rx_cnt++] = c;           // add to buffer
         }
