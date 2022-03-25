@@ -4,76 +4,29 @@
         pio run --target upload && pio device monitor
 */
 #include "assert.h"
-#include "command.h"
-#include "ADS1256.h"
-#include "tlc59208.h"
+#include "cli.h"
 #include <Arduino.h>
-#include <SPI.h>
-#include <Wire.h>
 
-static const int CLKSPEED_MHZ = 8;
-static const float VREF = 2.5;
+Cli cli;        // Should be a singleton
 
-ADS1256 adc(CLKSPEED_MHZ, VREF, false);
-TLC59208 ledctrl;
-Command cmd;
-
-void scan()
+void dummy(int argc, char *argv[])
 {
-    float readings[8] = {0};
-    for (int i=0; i<8; i++) {
-        ledctrl.on(i);
-        adc.waitDRDY(); 
-        readings[i] = adc.readCurrentChannel();
-        ledctrl.off(i);
-    }
-
-    for (int i=0; i<8; i++) {
-        Serial.print(readings[i], 4);
-        Serial.print('\t');
-    }
-    Serial.println();
-}
-
-void read_adc()
-{
-    adc.waitDRDY(); 
-    float val = adc.readCurrentChannel();
-    Serial.println(val , 10);
-}
-
-void led(int channel, bool status)
-{
-    if (status == true) ledctrl.on(channel);
-    else ledctrl.off(channel);
-}
-
-void unknown()
-{
-    Serial.println("I didn't understand your command, did you mean SCAN, ADC, or LED ON/OFF?");
+    Serial.println("Executing function");
 }
 
 void setup()
 {
     Serial.begin(9600);
-    SPI.begin();
-    Wire.begin();
-    ledctrl.begin();
-    adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
-    cmd.begin(     // set callback functions for each command
-        scan,
-        read_adc,
-        led,
-        unknown
-    );
-
-    adc.setChannel(0,1);    // differential ADC reading 
-    Serial.print("PlasticScanner is initialized!");
-    Serial.println(" | Build date 08 march 2022");
+    cli.begin([
+        {"scan", scan, "Performs a scanning sequence, for each LED: turn LED on, measure ADC, turn LED off"},
+        {"adc", adc, "Read ADC value"},
+        {"led", led, "Turn LED on or off. Usage: led <number> <on/off>"},
+        {"help", help, "Show help"}
+    ]);
 }
 
 void loop()
 {
-    cmd.handle();
+    cli.handle();
 }
 
