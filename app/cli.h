@@ -9,11 +9,10 @@ public:
         const char *descr;
     };
 
-    void begin(Command command_arr[], int arr_size);
+    void add_command(Command cmd);      // add commands before calling begin
+    void begin();
     void handle();
-
-/* Temp dev/debug functions */
-    static void list_commands();        // hacky, since that's not really a static function
+    void list_commands();
 };
 
 

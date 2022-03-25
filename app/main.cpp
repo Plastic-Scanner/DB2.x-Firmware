@@ -7,8 +7,6 @@
 #include "cli.h"
 #include <Arduino.h>
 
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-
 Cli cli;
 
 void dummy(int argc, char *argv[])
@@ -16,15 +14,18 @@ void dummy(int argc, char *argv[])
     Serial.println("Executing function");
 }
 
+void help(int argc, char *argv[])
+{
+    cli.list_commands();
+}
+
 void setup()
 {
     Serial.begin(9600);
-    
-    Cli::Command cmdlist[] = {
-        {"dummy", dummy, "Dummy command which prints something"},
-        {"help", cli.list_commands, "Prints a list of available commands"},
-    };
-    cli.begin(cmdlist, ARRAY_SIZE(cmdlist));
+    cli.add_command({"dummy", dummy, "Execute a dummy command"});
+    cli.add_command({"scan", nullptr, "Perform a scan sequence: for each led measure adc value"});
+    cli.add_command({"help", help, "Lists all available commands"});
+    cli.begin();
 }
 
 void loop()

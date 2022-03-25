@@ -6,10 +6,14 @@ static const int MAX_COMMANDS = 20;
 static const int RX_BUF_SIZE = 20;
 static const int MAX_ARGS = 3;
 
+// TODO: move this to class/private
+static bool initialized = false;
 static Cli::Command commands[MAX_COMMANDS];
-static int num_commands;
+static int num_commands = 0;
 static char rx_buf[RX_BUF_SIZE];
 static int rx_cnt;
+
+static const char *prompt = "> ";
 
 static void parse_command()
 {
@@ -34,21 +38,26 @@ static void parse_command()
     }
 }
 
+
 static void reset()
 {
     rx_cnt = 0;
     memset(rx_buf, 0, RX_BUF_SIZE);
 }
 
-void Cli::begin(Command command_arr[], int arr_size)
+
+void Cli::list_commands()
 {
-    for (int i=0; i<arr_size; i++) {
-        commands[i] = command_arr[i];   // Copy commands into local array
-        assert(i < MAX_COMMANDS);
+    Serial.println("\nCommand name\t\tDescription");
+    Serial.println("------------\t\t-----------");
+    for (int i=0; i<num_commands; i++) {
+        Serial.print(commands[i].name);
+        Serial.print("\t\t\t");
+        Serial.print(commands[i].descr);
+        Serial.println();
     }
-    num_commands = arr_size;
-    reset();
 }
+
 
 void Cli::handle()
 {
@@ -65,6 +74,7 @@ void Cli::handle()
             parse_command();
             reset();
             if (Serial.peek() == '\n') Serial.read();  // handle CRLF line ending
+            Serial.print(prompt);
 
         } else {
             rx_buf[rx_cnt++] = c;           // add to buffer
@@ -73,14 +83,18 @@ void Cli::handle()
     }
 }
 
-void Cli::list_commands()
+
+void Cli::begin()
 {
-    Serial.println("\nCommand name\t\tDescription");
-    Serial.println("------------\t\t-----------");
-    for (int i=0; i<num_commands; i++) {
-        Serial.print(commands[i].name);
-        Serial.print("\t\t\t");
-        Serial.print(commands[i].descr);
-        Serial.println();
-    }
+    initialized = true;
+    reset();
+    Serial.print(prompt);
+}
+
+
+void Cli::add_command(Cli::Command cmd)
+{
+    assert(num_commands < MAX_COMMANDS);
+    assert(!initialized);                   // commands need to be added before calling begin() function
+    commands[num_commands++] = cmd;
 }
