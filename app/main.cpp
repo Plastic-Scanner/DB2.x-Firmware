@@ -7,7 +7,9 @@
 #include "cli.h"
 #include <Arduino.h>
 
-Cli cli;        // Should be a singleton
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+
+Cli cli;
 
 void dummy(int argc, char *argv[])
 {
@@ -17,12 +19,12 @@ void dummy(int argc, char *argv[])
 void setup()
 {
     Serial.begin(9600);
-    cli.begin([
-        {"scan", scan, "Performs a scanning sequence, for each LED: turn LED on, measure ADC, turn LED off"},
-        {"adc", adc, "Read ADC value"},
-        {"led", led, "Turn LED on or off. Usage: led <number> <on/off>"},
-        {"help", help, "Show help"}
-    ]);
+    
+    Cli::Command cmdlist[] = {
+        {"dummy", dummy, "Dummy command which prints something"},
+        {"help", cli.list_commands, "Prints a list of available commands"},
+    };
+    cli.begin(cmdlist, ARRAY_SIZE(cmdlist));
 }
 
 void loop()

@@ -9,9 +9,8 @@ public:
         const char *descr;
     };
 
-    void begin(Command cmd_list[]);
+    void begin(Command command_arr[], int arr_size);
     void handle();
-    // void add_command(const char *name, void (*func)(int argc, char *argv[]), const char *descr);
 
 /* Temp dev/debug functions */
     static void list_commands();        // hacky, since that's not really a static function

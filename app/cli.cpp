@@ -1,11 +1,13 @@
 #include "cli.h"
+#include "assert.h"
 #include <Arduino.h>
 
 static const int MAX_COMMANDS = 20;
 static const int RX_BUF_SIZE = 20;
 static const int MAX_ARGS = 3;
 
-static int command_cnt;
+static Cli::Command commands[MAX_COMMANDS];
+static int num_commands;
 static char rx_buf[RX_BUF_SIZE];
 static int rx_cnt;
 
@@ -13,7 +15,6 @@ static void parse_command()
 {
     int argc = 0;
     char *argv[MAX_ARGS] = {0};
-    bool args_ok = true;
 
     const char* delimiters = " ";
     char *token = strtok(rx_buf, delimiters);
@@ -23,8 +24,8 @@ static void parse_command()
     }
 
     // Compare first token (command) with all command names
-    for (int i=0; i < command_cnt; i++) {
-        Command cmd = command_list[i];
+    for (int i=0; i < num_commands; i++) {
+        Cli::Command cmd = commands[i];
         if (strcmp(cmd.name, argv[0]) == 0) {
             if (cmd.func != nullptr) cmd.func(argc, argv);
             else Serial.println("Command function not provided");
@@ -39,10 +40,14 @@ static void reset()
     memset(rx_buf, 0, RX_BUF_SIZE);
 }
 
-void Cli::begin()
+void Cli::begin(Command command_arr[], int arr_size)
 {
+    for (int i=0; i<arr_size; i++) {
+        commands[i] = command_arr[i];   // Copy commands into local array
+        assert(i < MAX_COMMANDS);
+    }
+    num_commands = arr_size;
     reset();
-    command_cnt = 0;
 }
 
 void Cli::handle()
@@ -68,20 +73,14 @@ void Cli::handle()
     }
 }
 
-void Cli::add_command(const char *name, void (*func)(int argc, char *argv[]), const char *descr)
-{
-    command_list[command_cnt++] = Command{name, func, descr};
-}
-
 void Cli::list_commands()
 {
-    for (int i=0; i<command_cnt; i++) {
-        Serial.print("Command ");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.print(command_list[i].name);
-        Serial.print("\t");
-        Serial.print(command_list[i].descr);
+    Serial.println("\nCommand name\t\tDescription");
+    Serial.println("------------\t\t-----------");
+    for (int i=0; i<num_commands; i++) {
+        Serial.print(commands[i].name);
+        Serial.print("\t\t\t");
+        Serial.print(commands[i].descr);
         Serial.println();
     }
 }
