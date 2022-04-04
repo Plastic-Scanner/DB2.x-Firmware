@@ -1,6 +1,6 @@
 # DB 2.x - Firmware
 
-This is the firmware repository for the Development Board 2 of the [Plastic Scanner](plasticscanner.com/) project. More technical information and resources are available on the [documentation](docs.plasticscanner.com) webpage.
+This is the firmware repository for the Development Board 2 of the [Plastic Scanner](https://plasticscanner.com/) project. More technical information and resources are available on the [documentation](https://docs.plasticscanner.com) webpage.
 
 
 
