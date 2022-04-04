@@ -23,13 +23,14 @@ void scan(int argc, char *argv[])
     float readings[8] = {0};
     for (int i=0; i<8; i++) {
         ledctrl.on(i);
+        delay(5);
         adc.waitDRDY(); 
         readings[i] = adc.readCurrentChannel();
         ledctrl.off(i);
     }
 
     for (int i=0; i<8; i++) {
-        Serial.print(readings[i], 4);
+        Serial.print(readings[i], 5);
         Serial.print('\t');
     }
     Serial.println();
@@ -39,7 +40,7 @@ void read_adc(int argc, char *argv[])
 {
     adc.waitDRDY(); 
     float val = adc.readCurrentChannel();
-    Serial.println(val , 10);
+    Serial.println(val , 5);
 }
 
 void led(int argc, char *argv[])
