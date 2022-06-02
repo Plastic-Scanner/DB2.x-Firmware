@@ -40,4 +40,4 @@ See app/main.cpp at `setup()` function which commands are defined or type `help`
 
 Feedback on architecture and implementation is welcome. Firmware currently controls an Arduino, which "talks" to an ADC chip and a LED driver, communicating via the serial interface. In directory `app` are the main sources, `test` is for unit tests (which needs much more love and actual tests), `drivers` contains custom drivers for componments on board.
 
-NOTE about drivers: at the moment, we use custom driver for the LED driver chip (`drivers/tlc59280`) and want to implement one for the ADC as well. However, at the moment we're using a third party library for the ADC, listed in *platformio.ini* at `[lib_deps]`, with sources located in `.pio/libdeps/uno/`. When a new driver is finished (checkout git branches), it will be stored in `drivers/ads1256` directory.
+> NOTE about drivers: at the moment we're using a third party library for the ADC, listed in *platformio.ini* at `[lib_deps]`, with sources located in `.pio/libdeps/uno/`. However, we hope to soon implement a custom, simpler driver for it which will be located in `drivers/ads1256`.
