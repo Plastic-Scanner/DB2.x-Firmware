@@ -5,27 +5,23 @@
 */
 #include "assert.h"
 #include "cli.h"
-#include "ADS1256.h"
+#include "ads1256.h"
 #include "tlc59208.h"
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
 
-static const int CLKSPEED_MHZ = 8;
-static const float VREF = 2.5;
-
-ADS1256 adc(CLKSPEED_MHZ, VREF, false);
+ADS1256 adc;
 TLC59208 ledctrl;
 Cli cli;
 
 void scan(int argc, char *argv[])
 {
-    float readings[8] = {0};
+    long readings[8] = {0};
     for (int i=0; i<8; i++) {
         ledctrl.on(i);
-        delay(5);
-        adc.waitDRDY(); 
-        readings[i] = adc.readCurrentChannel();
+        delay(5); 
+        readings[i] = adc.read_channel();
         ledctrl.off(i);
     }
 
@@ -37,9 +33,8 @@ void scan(int argc, char *argv[])
 }
 
 void read_adc(int argc, char *argv[])
-{
-    adc.waitDRDY(); 
-    float val = adc.readCurrentChannel();
+{ 
+    float val = adc.read_channel();
     Serial.println(val , 5);
 }
 
@@ -78,8 +73,7 @@ void setup()
     SPI.begin();
     Wire.begin();
     ledctrl.begin();
-    adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
-    adc.setChannel(0,1);    // differential ADC reading 
+    adc.begin();
 
     cli.add_command({"scan", scan, "Perform a scan sequence: for each led measure adc value"});
     cli.add_command({"adc", read_adc, "Reads ADC measurement"});
