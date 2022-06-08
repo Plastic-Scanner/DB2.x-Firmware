@@ -62,7 +62,7 @@ void ADS1256::begin()
     digitalWrite(RESET, HIGH);  // De-assert RESET line
     
     reset();
-    assert(read_id() == CHIP_ID);
+    // assert(read_id() == CHIP_ID);
 
     send_command(SDATAC);           // stop continuous reading mode
     write_register(DRATE, DR_10);   // set datarate (~10 SPS)
