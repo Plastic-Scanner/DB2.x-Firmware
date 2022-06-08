@@ -31,9 +31,8 @@ static void write_register(uint8_t reg, uint8_t data)
     SPI.beginTransaction(SPISettings(CLKSPEED, MSBFIRST, SPI_MODE1));
     digitalWrite(CS, LOW);
     SPI.transfer(WREG | reg);   // 1st command byte (register address)
-    delayMicroseconds(10);
-    SPI.transfer(data);         // 2nd command byte (no.registers to read == 1)
-    delayMicroseconds(10);
+    SPI.transfer(0);            // 2nd command byte (no.registers to read == 1)
+    SPI.transfer(data);         // data to write
     digitalWrite(CS, HIGH);
     SPI.endTransaction();
 }
@@ -62,14 +61,14 @@ void ADS1256::begin()
     digitalWrite(RESET, HIGH);  // De-assert RESET line
     
     reset();
-    // assert(read_id() == CHIP_ID);
+    assert(read_id() == CHIP_ID);
 
     send_command(SDATAC);           // stop continuous reading mode
     write_register(DRATE, DR_10);   // set datarate (~10 SPS)
     
     // Set gain
     uint8_t adcon_reg = read_register(ADCON);
-    uint8_t val2write = (adcon_reg & ~B00000111) | PGA_1;   // TODO understand how this works
+    uint8_t val2write = (adcon_reg & ~B00000111) | PGA_1;
     write_register(ADCON, val2write);
 
     // Perform self calibration
