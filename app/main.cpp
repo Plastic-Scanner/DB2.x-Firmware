@@ -10,6 +10,9 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <Adafruit_AS7341.h>
+
+Adafruit_AS7341 as7341;
 
 static const int CLKSPEED_MHZ = 8;
 static const float VREF = 2.5;
@@ -34,6 +37,27 @@ void scan(int argc, char *argv[])
         Serial.print('\t');
     }
     Serial.println();
+}
+
+void vis(int argc, char *argv[])
+{
+    as7341.setLEDCurrent(4); // 4mA
+    as7341.enableLED(true);
+    delay(5);
+    uint16_t readings[12];
+    if (!as7341.readAllChannels(readings)){
+    Serial.println("Error reading all channels!");
+    return;
+    }
+    for (int i=0; i<10; i++) {
+        float x = float(readings[i])/500;
+        Serial.print(x, 6);
+        Serial.print('\t');
+    }
+    Serial.println();
+  as7341.enableLED(false);
+
+
 }
 
 void read_adc(int argc, char *argv[])
@@ -74,24 +98,35 @@ void help(int argc, char *argv[])
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
     SPI.begin();
     Wire.begin();
     ledctrl.begin();
     adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
     adc.setChannel(0,1);    // differential ADC reading 
+    
+    // start as7341 stuff
+    if (!as7341.begin()){
+        Serial.println("Could not find AS7341");
+        while (1) { delay(10); }
+    }
+    
+    as7341.setATIME(100);
+    as7341.setASTEP(999);
+    as7341.setGain(AS7341_GAIN_1X);
+    // end as7241 stuff
 
     cli.add_command({"scan", scan, "Perform a scan sequence: for each led measure adc value"});
     cli.add_command({"adc", read_adc, "Reads ADC measurement"});
     cli.add_command({"led", led, "Turns an LED <number> on/off <state>.\n\t\t\t\tUsage: led <number> <state>"});
     cli.add_command({"help", help, "Lists all available commands"});
+    cli.add_command({"vis", vis, "Perform a scan of visual spectrum with as7341"});
     cli.begin();
 
-    Serial.println("PlasticScanner is initialized!");
+    //Serial.println("PlasticScanner is initialized!");
 }
 
 void loop()
 {
     cli.handle();
 }
-
