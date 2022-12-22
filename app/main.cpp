@@ -6,7 +6,16 @@
 #include "assert.h"
 #include "cli.h"
 #include "ADS1256.h"
-#include "tlc59208.h"
+
+///////////////////LED DRIVER////////////////////////////
+// If you are using the original Texas instruments led driver please use the following include
+// If you are using the PCA9551 led driver (which is often more in stock, please use the that library include
+// IMPORTANT: also change it at line 35, 41 and line 80
+//#include "tlc59208.h"
+//TLC59208 ledctrl;
+#include "PCA9551.h"
+PCA9551 ledDriver = PCA9551(PCA9551_ADDR_1);
+/////////////////////////
 #include <Arduino.h>
 #include <SPI.h>
 #include <Wire.h>
@@ -15,18 +24,21 @@ static const int CLKSPEED_MHZ = 8;
 static const float VREF = 2.5;
 
 ADS1256 adc(CLKSPEED_MHZ, VREF, false);
-TLC59208 ledctrl;
 Cli cli;
 
 void scan(int argc, char *argv[])
 {
     float readings[8] = {0};
     for (int i=0; i<8; i++) {
-        ledctrl.on(i);
+        //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
+        // ledctrl.on(i);
+        ledDriver.setLedState(i, LED_ON);
         delay(5);
         adc.waitDRDY(); 
         readings[i] = adc.readCurrentChannel();
-        ledctrl.off(i);
+        //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
+        // ledctrl.off(i);
+        ledDriver.setLedState(i, LED_OFF);
     }
 
     for (int i=0; i<8; i++) {
@@ -63,7 +75,9 @@ void led(int argc, char *argv[])
     if (args_ok == false) {
         Serial.println("Usage: Usage: led <number> <on/off>");
     } else {
-        state == true ? ledctrl.on(num) : ledctrl.off(num);
+        //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
+        //state == true ? ledctrl.on(num) : ledctrl.off(num);
+        state == true ? ledDriver.setLedState(num, LED_ON) : ledDriver.setLedState(num, LED_OFF);
     }
 }
 
@@ -77,7 +91,7 @@ void setup()
     Serial.begin(9600);
     SPI.begin();
     Wire.begin();
-    ledctrl.begin();
+    // ledctrl.begin();
     adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
     adc.setChannel(0,1);    // differential ADC reading 
 
@@ -87,7 +101,7 @@ void setup()
     cli.add_command({"help", help, "Lists all available commands"});
     cli.begin();
 
-    Serial.println("PlasticScanner is initialized!");
+    //Serial.println("PlasticScanner is initialized!");
 }
 
 void loop()
