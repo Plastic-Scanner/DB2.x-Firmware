@@ -11,10 +11,10 @@
 // If you are using the original Texas instruments led driver please use the following include
 // If you are using the PCA9551 led driver (which is often more in stock, please use the that library include
 // IMPORTANT: also change it at line 35, 41 and line 80
-#include "tlc59208.h"
-TLC59208 ledctrl;
-//#include "PCA9551.h"
-//PCA9551 ledDriver = PCA9551(PCA9551_ADDR_1);
+//#include "tlc59208.h"
+// TLC59208 ledctrl;
+#include "PCA9551.h"
+PCA9551 ledDriver = PCA9551(PCA9551_ADDR_1);
 /////////////////////////
 #include <Arduino.h>
 #include <SPI.h>
@@ -31,14 +31,14 @@ void scan(int argc, char *argv[])
     float readings[8] = {0};
     for (int i=0; i<8; i++) {
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
-        ledctrl.on(i);
-        //ledDriver.setLedState(i, LED_ON);
+        // ledctrl.on(i);
+        ledDriver.setLedState(i, LED_ON);
         delay(5);
         adc.waitDRDY(); 
         readings[i] = adc.readCurrentChannel();
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
-        ledctrl.off(i);
-        //ledDriver.setLedState(i, LED_OFF);
+        // ledctrl.off(i);
+        ledDriver.setLedState(i, LED_OFF);
     }
 
     for (int i=0; i<8; i++) {
@@ -76,8 +76,8 @@ void led(int argc, char *argv[])
         Serial.println("Usage: Usage: led <number> <on/off>");
     } else {
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
-        state == true ? ledctrl.on(num) : ledctrl.off(num);
-        //state == true ? ledDriver.setLedState(num, LED_ON) : ledDriver.setLedState(num, LED_OFF);
+        // state == true ? ledctrl.on(num) : ledctrl.off(num);
+        state == true ? ledDriver.setLedState(num, LED_ON) : ledDriver.setLedState(num, LED_OFF);
     }
 }
 
