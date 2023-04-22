@@ -37,6 +37,27 @@ void scan(int argc, char *argv[])
     delay(100);
 }
 
+void keepscan(int argc, char *argv[])
+{
+    Serial.println("scan continous start");
+    for (int j=0; j<80; j++){
+        for (int i=0; i<8; i++) {
+            //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
+            // ledctrl.on(i);
+            ledDriver.setLedState(i, LED_ON);
+
+            delay(8);
+            //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
+            // ledctrl.off(i);
+            ledDriver.setLedState(i, LED_OFF);
+            delay(8);
+        }
+    }
+    Serial.println("scan continous done");
+}
+
+
+
 void led(int argc, char *argv[])
 {
     int num;        // Parameter 1: led number [0..7]
@@ -73,7 +94,7 @@ void setup()
     Serial.begin(9600);
     Wire.begin();
     // ledctrl.begin();
-
+    cli.add_command({"keepscan", keepscan, "Perform a scan sequence for 80 times"});
     cli.add_command({"scan", scan, "Perform a scan sequence: for each led measure adc value"});
     cli.add_command({"led", led, "Turns an LED <number> on/off <state>.\n\t\t\t\tUsage: led <number> <state>"});
     cli.add_command({"help", help, "Lists all available commands"});
