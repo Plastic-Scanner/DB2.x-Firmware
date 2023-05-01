@@ -39,6 +39,7 @@ void scan(int argc, char *argv[])
     for (int i=0; i<8; i++) {
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
         // ledctrl.on(i);
+        //delay(50);
         ledDriver.setLedState(i, LED_ON);
         delay(5);
 
@@ -49,10 +50,11 @@ void scan(int argc, char *argv[])
             delay(1);
         }
         readings[i] = nau.read();         
-        
+        delay(5);
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
         // ledctrl.off(i);
         ledDriver.setLedState(i, LED_OFF);
+        delay(5);
     }
 
     for (int i=0; i<8; i++) {
@@ -120,9 +122,9 @@ void setup()
     if (! nau.begin()) {
         Serial.println("Failed to find NAU7802");
     }
-    Serial.println("Found NAU7802");
-    nau.setLDO(NAU7802_3V0);
-    nau.setGain(NAU7802_GAIN_128);
+    // Serial.println("Found NAU7802");
+    nau.setLDO(NAU7802_EXTERNAL);
+    nau.setGain(NAU7802_GAIN_1);
     nau.setRate(NAU7802_RATE_10SPS);
     // Take 10 readings to flush out readings
     for (uint8_t i=0; i<10; i++) {
@@ -133,13 +135,13 @@ void setup()
         Serial.println("Failed to calibrate internal offset, retrying!");
         delay(1000);
     }
-    Serial.println("Calibrated internal offset");
+    //Serial.println("Calibrated internal offset");
 
     while (! nau.calibrate(NAU7802_CALMOD_OFFSET)) {
         Serial.println("Failed to calibrate system offset, retrying!");
         delay(1000);
     }
-    Serial.println("Calibrated system offset");
+    //Serial.println("Calibrated system offset");
 
     cli.add_command({"scan", scan, "Perform a scan sequence: for each led measure adc value"});
     cli.add_command({"adc", read_adc, "Reads ADC measurement"});
