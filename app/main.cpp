@@ -41,24 +41,34 @@ void scan(int argc, char *argv[])
         // ledctrl.on(i);
         //delay(50);
         ledDriver.setLedState(i, LED_ON);
-        delay(5);
+        delay(50);
 
         //ADC
         //adc.waitDRDY();
         //readings[i] = adc.readCurrentChannel();
+        //float val = 0 ;
+        // skit the first 2 readings
+        for (uint8_t i=0; i<2; i++) {
+            while (! nau.available()) delay(1);
+            nau.read();
+        }
+        // for (uint8_t i=0; i<10; i++) {
+        //     while (! nau.available()) delay(1);
+        //     readings[i] = readings[i] + nau.read();
+        // }
         while (! nau.available()) {
             delay(1);
         }
         readings[i] = nau.read();         
-        delay(5);
+        delay(50);
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
         // ledctrl.off(i);
         ledDriver.setLedState(i, LED_OFF);
-        delay(5);
+        delay(50);
     }
 
     for (int i=0; i<8; i++) {
-        Serial.print(readings[i], 5);
+        Serial.print(readings[i], 1);
         Serial.print('\t');
     }
     Serial.println();
@@ -69,12 +79,21 @@ void read_adc(int argc, char *argv[])
     //ADC
     //adc.waitDRDY();
     //float val = adc.readCurrentChannel();
-    while (! nau.available()) {
-        delay(1);
+    float val = 0 ;
+    for (uint8_t i=0; i<50; i++) {
+        while (! nau.available()) delay(1);
+        nau.read();
     }
-    float val = nau.read();  
+    for (uint8_t i=0; i<50; i++) {
+        while (! nau.available()) delay(1);
+        val = val + nau.read();
+    }
+    // while (! nau.available()) {
+    //     delay(1);
+    // }
+    //float val = nau.read();  
 
-    Serial.println(val , 5);
+    Serial.println(val , 1);
 }
 
 void led(int argc, char *argv[])
