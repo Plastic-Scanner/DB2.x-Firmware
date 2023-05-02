@@ -42,7 +42,7 @@ void scan(int argc, char *argv[])
         ledDriver.setLedState(i, LED_ON);
         delay(10);
 
-        // skip the first 5 readings
+        // skip the first 10 readings
         for (uint8_t i=0; i<10; i++) {
             while (! nau.available()) delay(1);
             nau.getReading();
@@ -53,12 +53,13 @@ void scan(int argc, char *argv[])
         //float val = 0 ;
         // skit the first 2 readings
 
-        // for (uint8_t i=0; i<10; i++) {
+        // for (uint8_t i=0; i<2; i++) {
         //     while (! nau.available()) delay(1);
         //     readings[i] = readings[i] + nau.getReading();
         // }
         while (! nau.available()) delay(1);
-        readings[i] = nau.getReading();         
+        readings[i] = nau.getAverage(10);
+        // readings[i] = nau.getReading();         
         //delay(50);
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
         // ledctrl.off(i);
@@ -78,12 +79,12 @@ void read_adc(int argc, char *argv[])
     //ADC
     //adc.waitDRDY();
     //float val = adc.readCurrentChannel();
-    float val = 0 ;
-    for (uint8_t i=0; i<50; i++) {
+    long val = 0 ;
+    for (uint8_t i=0; i<10; i++) {
         while (! nau.available()) delay(1);
         nau.getReading();
     }
-    for (uint8_t i=0; i<50; i++) {
+    for (uint8_t i=0; i<10; i++) {
         while (! nau.available()) delay(1);
         val = val + nau.getReading();
     }
@@ -154,17 +155,17 @@ void setup()
     nau.setSampleRate(NAU7802_SPS_320); //Increase to max sample rate
     nau.calibrateAFE(); //Re-cal analog front end when we change gain, sample rate, or channel 
 
-    Serial.print("Zero offset: ");
-    Serial.println(nau.getZeroOffset());
-    Serial.print("Calibration factor: ");
-    Serial.println(nau.getCalibrationFactor());
+    // Serial.print("Zero offset: ");
+    // Serial.println(nau.getZeroOffset());
+    // Serial.print("Calibration factor: ");
+    // Serial.println(nau.getCalibrationFactor());
     cli.add_command({"scan", scan, "Perform a scan sequence: for each led measure adc value"});
     cli.add_command({"adc", read_adc, "Reads ADC measurement"});
     cli.add_command({"led", led, "Turns an LED <number> on/off <state>.\n\t\t\t\tUsage: led <number> <state>"});
     cli.add_command({"help", help, "Lists all available commands"});
     cli.begin();
 
-    Serial.println("PlasticScanner is initialized!");
+    //Serial.println("PlasticScanner is initialized!");
 }
 
 void loop()
