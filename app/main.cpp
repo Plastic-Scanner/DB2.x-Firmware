@@ -13,9 +13,8 @@
 // static const int CLKSPEED_MHZ = 8;
 // static const float VREF = 2.5;
 // ADS1256 adc(CLKSPEED_MHZ, VREF, false);
-
-#include <Adafruit_NAU7802.h>
-Adafruit_NAU7802 nau;
+#include <SparkFun_Qwiic_Scale_NAU7802_Arduino_Library.h>
+NAU7802 nau;
 /////////////////////////
 
 
@@ -41,30 +40,30 @@ void scan(int argc, char *argv[])
         // ledctrl.on(i);
         //delay(50);
         ledDriver.setLedState(i, LED_ON);
-        delay(50);
+        delay(10);
 
+        // skip the first 5 readings
+        for (uint8_t i=0; i<10; i++) {
+            while (! nau.available()) delay(1);
+            nau.getReading();
+        }
         //ADC
         //adc.waitDRDY();
         //readings[i] = adc.readCurrentChannel();
         //float val = 0 ;
         // skit the first 2 readings
-        for (uint8_t i=0; i<2; i++) {
-            while (! nau.available()) delay(1);
-            nau.read();
-        }
+
         // for (uint8_t i=0; i<10; i++) {
         //     while (! nau.available()) delay(1);
-        //     readings[i] = readings[i] + nau.read();
+        //     readings[i] = readings[i] + nau.getReading();
         // }
-        while (! nau.available()) {
-            delay(1);
-        }
-        readings[i] = nau.read();         
-        delay(50);
+        while (! nau.available()) delay(1);
+        readings[i] = nau.getReading();         
+        //delay(50);
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
         // ledctrl.off(i);
         ledDriver.setLedState(i, LED_OFF);
-        delay(50);
+        //delay(50);
     }
 
     for (int i=0; i<8; i++) {
@@ -82,16 +81,16 @@ void read_adc(int argc, char *argv[])
     float val = 0 ;
     for (uint8_t i=0; i<50; i++) {
         while (! nau.available()) delay(1);
-        nau.read();
+        nau.getReading();
     }
     for (uint8_t i=0; i<50; i++) {
         while (! nau.available()) delay(1);
-        val = val + nau.read();
+        val = val + nau.getReading();
     }
     // while (! nau.available()) {
     //     delay(1);
     // }
-    //float val = nau.read();  
+    //float val = nau.getReading();  
 
     Serial.println(val , 1);
 }
@@ -132,6 +131,7 @@ void setup()
     Serial.begin(9600);
     
     Wire.begin();
+    Wire.setClock(400000);
     // ledctrl.begin();
     
     //ADC
@@ -142,33 +142,29 @@ void setup()
         Serial.println("Failed to find NAU7802");
     }
     // Serial.println("Found NAU7802");
-    nau.setLDO(NAU7802_EXTERNAL);
-    nau.setGain(NAU7802_GAIN_1);
-    nau.setRate(NAU7802_RATE_10SPS);
+    nau.setLDO(3.3);
+    nau.setGain(NAU7802_GAIN_4);
+    nau.setSampleRate(NAU7802_SPS_40);
     // Take 10 readings to flush out readings
     for (uint8_t i=0; i<10; i++) {
         while (! nau.available()) delay(1);
-        nau.read();
+        nau.getReading();
     }
-    while (! nau.calibrate(NAU7802_CALMOD_INTERNAL)) {
-        Serial.println("Failed to calibrate internal offset, retrying!");
-        delay(1000);
-    }
-    //Serial.println("Calibrated internal offset");
+    nau.calibrateAFE();
+    nau.setSampleRate(NAU7802_SPS_320); //Increase to max sample rate
+    nau.calibrateAFE(); //Re-cal analog front end when we change gain, sample rate, or channel 
 
-    while (! nau.calibrate(NAU7802_CALMOD_OFFSET)) {
-        Serial.println("Failed to calibrate system offset, retrying!");
-        delay(1000);
-    }
-    //Serial.println("Calibrated system offset");
-
+    Serial.print("Zero offset: ");
+    Serial.println(nau.getZeroOffset());
+    Serial.print("Calibration factor: ");
+    Serial.println(nau.getCalibrationFactor());
     cli.add_command({"scan", scan, "Perform a scan sequence: for each led measure adc value"});
     cli.add_command({"adc", read_adc, "Reads ADC measurement"});
     cli.add_command({"led", led, "Turns an LED <number> on/off <state>.\n\t\t\t\tUsage: led <number> <state>"});
     cli.add_command({"help", help, "Lists all available commands"});
     cli.begin();
 
-    //Serial.println("PlasticScanner is initialized!");
+    Serial.println("PlasticScanner is initialized!");
 }
 
 void loop()
