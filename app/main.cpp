@@ -22,7 +22,7 @@ NAU7802 nau;
 // If you are using the original Texas instruments led driver please use the following include
 // If you are using the PCA9551 led driver (which is often more in stock, please use the that library include
 // IMPORTANT: also change it at line 35, 41 and line 80
-//#include "tlc59208.h"
+// #include "tlc59208.h"
 // TLC59208 ledctrl;
 #include "PCA9551.h"
 PCA9551 ledDriver = PCA9551(PCA9551_ADDR_1);
@@ -38,7 +38,6 @@ void scan(int argc, char *argv[])
     for (int i=0; i<8; i++) {
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
         // ledctrl.on(i);
-        //delay(50);
         ledDriver.setLedState(i, LED_ON);
         delay(10);
 
@@ -62,7 +61,7 @@ void scan(int argc, char *argv[])
         // readings[i] = nau.getReading();         
         //delay(50);
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
-        // ledctrl.off(i);
+        //ledctrl.off(i);
         ledDriver.setLedState(i, LED_OFF);
         //delay(50);
     }
@@ -117,7 +116,7 @@ void led(int argc, char *argv[])
         Serial.println("Usage: Usage: led <number> <on/off>");
     } else {
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
-        // state == true ? ledctrl.on(num) : ledctrl.off(num);
+        //state == true ? ledctrl.on(num) : ledctrl.off(num);
         state == true ? ledDriver.setLedState(num, LED_ON) : ledDriver.setLedState(num, LED_OFF);
     }
 }
@@ -133,8 +132,8 @@ void setup()
     
     Wire.begin();
     Wire.setClock(400000);
-    // ledctrl.begin();
     
+    //ledctrl.begin();
     //ADC
     // SPI.begin();
     // adc.begin(ADS1256_DRATE_30000SPS,ADS1256_GAIN_1,false); 
@@ -143,18 +142,16 @@ void setup()
         Serial.println("Failed to find NAU7802");
     }
     // Serial.println("Found NAU7802");
-    nau.setLDO(3.3);
-    nau.setGain(NAU7802_GAIN_4);
-    nau.setSampleRate(NAU7802_SPS_40);
     // Take 10 readings to flush out readings
     for (uint8_t i=0; i<10; i++) {
         while (! nau.available()) delay(1);
         nau.getReading();
     }
-    nau.calibrateAFE();
+    nau.setLDO(3.3);
+    nau.setGain(NAU7802_GAIN_128);
     nau.setSampleRate(NAU7802_SPS_320); //Increase to max sample rate
     nau.calibrateAFE(); //Re-cal analog front end when we change gain, sample rate, or channel 
-
+    
     // Serial.print("Zero offset: ");
     // Serial.println(nau.getZeroOffset());
     // Serial.print("Calibration factor: ");
