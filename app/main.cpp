@@ -42,7 +42,7 @@ void scan(int argc, char *argv[])
         delay(10);
 
         // skip the first 10 readings
-        for (uint8_t i=0; i<10; i++) {
+        for (uint8_t i=0; i<15; i++) {
             while (! nau.available()) delay(1);
             nau.getReading();
         }
@@ -57,7 +57,7 @@ void scan(int argc, char *argv[])
         //     readings[i] = readings[i] + nau.getReading();
         // }
         while (! nau.available()) delay(1);
-        readings[i] = nau.getAverage(10);
+        readings[i] = nau.getAverage(15);
         // readings[i] = nau.getReading();         
         //delay(50);
         //LED DRIVER: For TLC59208 choose the ledctrl, for PCA9551 choose ledDriver////////////////////
