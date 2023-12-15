@@ -6,7 +6,7 @@ This is the firmware repository for the DB2.X (development board) of the Plastic
 
 ## Requirements
 
-Firmware runs on DB2.x (tested on DB2.1), powered by Arduino.
+Firmware runs on DB2.x (tested on DB2.3), powered by Arduino Uno.
 Requires **PlatformIO**, a cross-platform embedded development toolset. See installation instructions [here ](https://platformio.org/install/)it can be as easy as one-click-plugin-installation (PlatformIO IDE).
 
 In order to build and upload the firmware to DB2.x, connect the board to computer and find the *Build* and *Upload* buttons in the PlatformIO IDE OR use the following commands:
